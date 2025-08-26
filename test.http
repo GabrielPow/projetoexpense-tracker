@@ -9,12 +9,24 @@ GET  {{url}}/transacoes
 ### 3. criar nova transacao
 POST {{url}}/transacoes 
 Content-Type: application/json
+
 {
-    "descricao": "transacao",
-    "valor": 100,
-    "categoria": "Salário",
-    "tipo": "receita"        
+    "descricao": "Transacao",
+    "valor": 5000,
+    "categoria": "Lazer",
+    "tipo": "despesa"
 }
+### 3.1 criar nova transacao
+POST {{url}}/transacoes 
+Content-Type: application/json
+
+{
+    "descricao": "Transacao",
+    "valor": 2000,
+    "categoria": "Salário",
+    "tipo": "receita"
+}
+
 ### OPCOES
 # tipo: "receita" ou "despesa"
 # RECEITAS_VALIDAS = ["Salário", "Freelance", "Vendas", "Outros"]
@@ -26,18 +38,26 @@ GET {{url}}/transacoes/1
 ### 5. atualizar transacao
 PUT {{url}}/transacoes/1
 Content-Type: application/json
+
 {
-    "descricao": "pagamento",
-    "valor": 1000,
-    "categoria": "Contas",
-    "tipo": "despesa"        
+    "descricao": "alteracao de categoria",
+    "categoria": "Contas"
+}
+
+### 5.1 atualizar transacao
+PUT {{url}}/transacoes/1
+Content-Type: application/json
+
+{
+    "descricao": "alteracao de valor",
+    "valor": 2020
 }
 
 ### 6. deletar transacao
-DELETE {{url}}/transacoes/1
+DELETE {{url}}/transacao/1
 
 ### 7. buscar com filtros
-GET {{url}}/transacoes/buscar?tipo=receita&categoria=Salário
+GET {{url}}/transacao/buscar?tipo=despesa&categoria=Lazer
 
 ### 8. saldo atual
 GET {{url}}/saldo
