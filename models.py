@@ -10,6 +10,11 @@ class Transacao(BaseModel):
     tipo: str = Field(...)  # "receita" ou "despesa"
     data_criacao: Optional[datetime] = None
 
+class TransacaoUpdate(BaseModel):
+    descricao: Optional[str] = Field(None, min_length=10, max_length=500)
+    valor: Optional[float] = Field(..., gt=0)
+    categoria: Optional[str] = Field(...)
+
 RECEITAS_VALIDAS = ["Salário", "Freelance", "Vendas", "Outros"]
 
 DESPESAS_VALIDAS = ["Alimentação", "Transporte", "Lazer", "Contas", "Outros"]

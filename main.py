@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from models import Transacao
+from models import Transacao, TransacaoUpdate
 from datetime import datetime
 from typing import List
 
@@ -35,11 +35,10 @@ def criar_transacao(transacao: Transacao):
     
     nova_transacao = Transacao(
         id=next_id,
-        titulo=transacao.titulo,
         descricao=transacao.descricao,
-        preco=transacao.preco,
+        valor=transacao.valor,
         categoria=transacao.categoria,
-        vendedor=transacao.vendedor,
+        tipo=transacao.tipo,
         data_criacao=datetime.now()
     )
     transacao_db.append(nova_transacao)
@@ -57,75 +56,87 @@ from typing import List, Optional
 
 # ... código existente da aula anterior ...
 
-@app.put("/produtos/{produto_id}", response_model=Produto)
-def atualizar_produto(produto_id: int, produto_atualizado: ProdutoCreate):
-    """Atualizar produto completo"""
-    # Buscar produto existente
-    produto_index = None
-    for i, produto in enumerate(produtos_db):
-        if produto.id == produto_id:
-            produto_index = i
+# Atualizar Transação
+@app.put("/transacoes/{id}", response_model=Transacao)
+def atualizar_transacao(id: int, transacao_atualizado: TransacaoUpdate):
+    """Atualizar transação completo"""
+    # Buscar transações existentes
+    transacao_index = None
+    for i, transacao in enumerate(transacao_db):
+        if transacao.id == id:
+            transacao_index = i
             break
     
-    if produto_index is None:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
+    if transacao_index is None:
+        raise HTTPException(status_code=404, detail="Transação não encontrado")
     
     # Validar categoria
-    if produto_atualizado.categoria not in CATEGORIAS_VALIDAS:
+    if transacao_atualizado.tipo not in DESPESAS_VALIDAS:
         raise HTTPException(
             status_code=422, 
-            detail=f"Categoria inválida. Use uma destas: {', '.join(CATEGORIAS_VALIDAS)}"
+            detail=f"Categoria inválida. Use uma destas: {', '.join(DESPESAS_VALIDAS)}"
         )
-    
-    # Atualizar produto mantendo ID e data de criação
-    produto_original = produtos_db[produto_index]
-    produto_novo = Produto(
-        id=produto_original.id,
-        titulo=produto_atualizado.titulo,
-        descricao=produto_atualizado.descricao,
-        preco=produto_atualizado.preco,
-        categoria=produto_atualizado.categoria,
-        vendedor=produto_atualizado.vendedor,
-        data_criacao=produto_original.data_criacao
+    elif transacao_atualizado.tipo not in RECEITAS_VALIDAS:
+        raise HTTPException(
+            status_code=422, 
+            detail=f"Categoria inválida. Use uma destas: {', '.join(RECEITAS_VALIDAS)}"
+        )
+    # Atualizar transacao mantendo ID e data de criação
+    transacao_original = transacao_db[transacao_index]
+    transacao_novo = Transacao(
+        id=transacao_original.id,
+        descricao=transacao_atualizado.descricao,
+        valor=transacao_atualizado.preco,
+        categoria=transacao_atualizado.categoria,
+        tipo=transacao_original.tipo,
+        data_criacao=transacao_original.data_criacao
     )
     
-    produtos_db[produto_index] = produto_novo
-    return produto_novo
+    transacao_db[transacao_index] = transacao_novo
+    return transacao_novo
 
-@app.delete("/produtos/{produto_id}")
-def deletar_produto(produto_id: int):
-    """Remover produto"""
-    global produtos_db
+# Deletar Transação
+@app.delete("/transacao/{id}")
+def deletar_transacao(id: int):
+    """Remover transacaos"""
+    global transacao_db
     
     # Buscar produto
     produto_existe = False
-    for i, produto in enumerate(produtos_db):
-        if produto.id == produto_id:
-            produtos_db.pop(i)
-            produto_existe = True
+    for i, transacao in enumerate(transacao_db):
+        if transacao.id == id:
+            transacao_db.pop(i)
+            transacao_existe = True
             break
     
-    if not produto_existe:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
+    if not transacao_existe:
+        raise HTTPException(status_code=404, detail="Transação não encontrado")
     
-    return {"message": "Produto removido com sucesso"}
+    return {"message": "Transação removido com sucesso"}
 
-@app.get("/produtos/buscar", response_model=List[Produto])
-def buscar_produtos(
+# Buscar Produtos com filtros
+@app.get("/transacao/buscar", response_model=List[Transacao])
+def buscar_transacao(
     categoria: Optional[str] = Query(None, description="Filtrar por categoria"),
-    termo: Optional[str] = Query(None, min_length=2, description="Buscar no título ou descrição"),
-    preco_min: Optional[float] = Query(None, ge=0, description="Preço mínimo"),
-    preco_max: Optional[float] = Query(None, ge=0, description="Preço máximo")
+    termo: Optional[str] = Query(None, min_length=2, description="Buscar na descrição"),
+    valor_min: Optional[float] = Query(None, ge=0, description="Valor mínimo"),
+    valor_max: Optional[float] = Query(None, ge=0, description="Valor máximo"),
+    tipo: Optional[str] = Query(None, description="Tipo de transação (receita ou despesa)")
 ):
-    """Buscar produtos com filtros"""
-    resultados = produtos_db.copy()
+    """Buscar transacao com filtros"""
+    resultados = transacao_db.copy()
     
     # Filtrar por categoria
     if categoria:
-        if categoria not in CATEGORIAS_VALIDAS:
+        if categoria not in RECEITAS_VALIDAS:
             raise HTTPException(
                 status_code=422, 
-                detail=f"Categoria inválida. Use uma destas: {', '.join(CATEGORIAS_VALIDAS)}"
+                detail=f"Categoria inválida. Use uma destas: {', '.join(RECEITAS_VALIDAS)}"
+            )
+        elif categoria not in DESPESAS_VALIDAS:
+            raise HTTPException(
+                status_code=422, 
+                detail=f"Categoria inválida. Use uma destas: {', '.join(DESPESAS_VALIDAS)}"
             )
         resultados = [p for p in resultados if p.categoria == categoria]
     
@@ -134,58 +145,38 @@ def buscar_produtos(
         termo_lower = termo.lower()
         resultados = [
             p for p in resultados 
-            if termo_lower in p.titulo.lower() or termo_lower in p.descricao.lower()
+            if termo_lower in p.descricao.lower()
         ]
     
     # Filtrar por preço mínimo
-    if preco_min is not None:
-        resultados = [p for p in resultados if p.preco >= preco_min]
+    if valor_min is not None:
+        resultados = [p for p in resultados if p.valor >= valor_min]
     
     # Filtrar por preço máximo
-    if preco_max is not None:
-        resultados = [p for p in resultados if p.preco <= preco_max]
+    if valor_max is not None:
+        resultados = [p for p in resultados if p.valor <= valor_max]
+    
+    # Filtrar por tipo
+    if termo:
+        tipo_lower = tipo.lower()
+        resultados = [
+            p for p in resultados 
+            if tipo_lower in p.tipo.lower()
+        ]
     
     return resultados
 
-@app.get("/categorias")
-def listar_categorias():
-    """Listar categorias disponíveis"""
-    return {
-        "categorias": CATEGORIAS_VALIDAS,
-        "total": len(CATEGORIAS_VALIDAS)
-    }
+# Pega o Saldo
+@app.get("/saldo")
+def listar_saldo():
+    """Listar saldo"""
+    saldo = sum(p.valor for p in transacao_db if p.tipo == "receita")
+    return saldo
 
-@app.get("/produtos/estatisticas")
-def estatisticas_produtos():
-    """Estatísticas simples dos produtos"""
-    if not produtos_db:
-        return {
-            "total_produtos": 0,
-            "preco_medio": 0,
-            "categoria_mais_popular": None
-        }
-    
-    # Calcular estatísticas
-    total = len(produtos_db)
-    preco_medio = sum(p.preco for p in produtos_db) / total
-    
-    # Categoria mais popular
-    categorias_count = {}
-    for produto in produtos_db:
-        categorias_count[produto.categoria] = categorias_count.get(produto.categoria, 0) + 1
-    
-    categoria_popular = max(categorias_count, key=categorias_count.get) if categorias_count else None
-    
-    return {
-        "total_produtos": total,
-        "preco_medio": round(preco_medio, 2),
-        "categoria_mais_popular": categoria_popular,
-        "produtos_por_categoria": categorias_count
-    }
-
-@app.get("/produtos/{produto_id}", response_model=Produto)
-def buscar_produto(produto_id: int):
-    produto = next((p for p in produtos_db if p.id == produto_id), None)
-    if not produto:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
-    return produto
+# Get Transações por ID
+@app.get("/transacoes/{id}", response_model=Transacao)
+def buscar_transacao(id: int):
+    transacao = next((p for p in transacao_db if p.id == id), None)
+    if not transacao:
+        raise HTTPException(status_code=404, detail="Transação não encontrado")
+    return transacao
