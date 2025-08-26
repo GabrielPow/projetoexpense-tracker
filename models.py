@@ -11,9 +11,9 @@ class Transacao(BaseModel):
     data_criacao: Optional[datetime] = None
 
 class TransacaoUpdate(BaseModel):
-    descricao: Optional[str] = Field(None, min_length=10, max_length=500)
-    valor: Optional[float] = Field(..., gt=0)
-    categoria: Optional[str] = Field(...)
+    descricao: Optional[str] = Field(None, min_length=3, max_length=500)
+    valor: Optional[float] = None
+    categoria: Optional[str] = None
 
 RECEITAS_VALIDAS = ["Salário", "Freelance", "Vendas", "Outros"]
 
