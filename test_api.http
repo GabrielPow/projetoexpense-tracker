@@ -1,0 +1,44 @@
+@url = http://localhost:8000
+
+### 1. mesangem de boas-vindas
+GET {{url}}
+
+### 2. listar todas as transacoes
+GET  {{url}}/transacoes
+
+### 3. criar nova transacao
+POST {{url}}/transacoes 
+Content-Type: application/json
+{
+    "descricao": "transacao",
+    "valor": 100,
+    "categoria": "Salário",
+    "tipo": "receita"        
+}
+### OPCOES
+# tipo: "receita" ou "despesa"
+# RECEITAS_VALIDAS = ["Salário", "Freelance", "Vendas", "Outros"]
+# DESPESAS_VALIDAS = ["Alimentação", "Transporte", "Lazer", "Contas", "Outros"]
+
+### 4. buscar transacao por ID
+GET {{url}}/transacoes/1
+
+### 5. atualizar transacao
+PUT {{url}}/transacoes/1
+Content-Type: application/json
+{
+    "descricao": "pagamento",
+    "valor": 1000,
+    "categoria": "Contas",
+    "tipo": "despesa"        
+}
+
+### 6. deletar transacao
+DELETE {{url}}/transacoes/1
+
+### 7. buscar com filtros
+GET {{url}}/transacoes/buscar?tipo=receita&categoria=Salário
+
+### 8. saldo atual
+GET {{url}}/saldo
+
