@@ -145,5 +145,3 @@ Requisitos
     3. Clique em Send Request em cada bloco.
 
 >Certifique-se que a URL @url = http://localhost:8000 está correta.
-
-
