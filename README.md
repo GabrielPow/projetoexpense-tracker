@@ -34,7 +34,7 @@ categoria deve estar em listas válidas conforme o tipo
 
 🌐 URL da API no Azure
 
-    expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net
+    https://expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net
 
 ### 📚 Lista de Endpoints
 
