@@ -1,4 +1,4 @@
-@url = http://localhost:8000
+@url = https://expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net
 
 ### 1. mesangem de boas-vindas
 GET {{url}}
