@@ -34,7 +34,7 @@ categoria deve estar em listas válidas conforme o tipo
 
 🌐 URL da API no Azure
 
-    https://expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net
+    expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net
 
 ### 📚 Lista de Endpoints
 
@@ -45,8 +45,8 @@ categoria deve estar em listas válidas conforme o tipo
 - **POST**	/transacoes	Cria uma nova transação
 - **GET**	/transacoes/{id}	Busca transação por ID
 - **PUT**	/transacoes/{id}	Atualiza totalmente uma transação (mantém tipo)
-- **DELETE**	/transacao/{id}	Deleta transação por ID (rota no singular)
-- **GET**	/transacao/buscar	Busca com filtros (rota no singular)
+- **DELETE**	/transacao/{id}	Deleta transação por ID 
+- **GET**	/transacao/buscar	Busca com filtros
 - **GET**	/saldo	Retorna o saldo atual
 
 
@@ -145,3 +145,10 @@ Requisitos
     3. Clique em Send Request em cada bloco.
 
 >Certifique-se que a URL @url = http://localhost:8000 está correta.
+
+
+### Autoria
+
+    Gabriel Pow:   Implementação e Testes
+    Pedro Lacerda:  Documentação e Testes
+    Pedro Pintor:   Documentação e Implementação
