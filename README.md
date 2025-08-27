@@ -30,11 +30,11 @@ categoria deve estar em listas válidas conforme o tipo
 
 ### 🔗 Link do GitHub
 
-    [preencher aqui]
+    (https://github.com/GabrielPow/projetoexpense-tracker)
 
 🌐 URL da API no Azure
 
-    [preencher aqui]
+    (expensetracker-cchde4hcfbdud3gn.brazilsouth-01.azurewebsites.net)
 
 ### 📚 Lista de Endpoints
 
